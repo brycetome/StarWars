@@ -1,0 +1,16 @@
+services:
+  starwars:
+    image: ${DOCKER_REGISTRY-}starwars
+    build:
+      context: .
+      dockerfile: StarWars/Dockerfile
+
+  backend:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=GoEngineer123
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
