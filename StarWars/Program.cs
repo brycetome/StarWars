@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
-    options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
+    options => options.UseSqlServer("Server=backend;Database=StarWarsDB;User Id=sa;Password=GoEngineer123;TrustServerCertificate=True;"));
 
 builder.Services.AddMudServices();
 
