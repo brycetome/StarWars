@@ -1,0 +1,1 @@
+psql -h localhost -U sa -d StarWarsDB -f /data/StarWarsDBBackup.sql
