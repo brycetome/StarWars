@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddDbContextFactory<ApplicationDbContext>();
 builder.Services.AddHttpClient();
 builder.Services.AddMudServices();
 

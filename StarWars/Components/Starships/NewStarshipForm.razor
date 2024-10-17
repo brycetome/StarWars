@@ -1,0 +1,49 @@
+﻿@page "/starships/new"
+
+@inherits StarshipForm
+
+@inject IDbContextFactory<ApplicationDbContext> factory
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+@{
+    base.BuildRenderTree(__builder);
+}
+
+<MudStack Row AlignItems="AlignItems.Center" Justify="Justify.FlexStart" Class="pa-2 ma-4">
+    <MudButton Variant="Variant.Filled"
+               EndIcon="@Icons.Material.Filled.Add"
+               Color="Color.Tertiary"
+               OnClick="SaveNewStarship">
+        Create
+    </MudButton>
+</MudStack>
+
+@code
+{
+    private async Task SaveNewStarship()
+    {
+        await Form.Validate();
+        if (!Form.IsValid)
+            return;
+
+        var now = DateTime.Now.ToUniversalTime();
+        LoadedStarship.Id = 0;
+        LoadedStarship.Created = now;
+        LoadedStarship.Edited = now;
+
+        try
+        {
+            using var ctx = factory.CreateDbContext();
+            ctx.Entry(LoadedStarship).State = EntityState.Added;
+            await ctx.SaveChangesAsync();
+            await ctx.DisposeAsync();
+
+            Snackbar.Add("Added the Starship", Severity.Success);
+        }
+        catch
+        {
+            Snackbar.Add("Failed to add the Starship", Severity.Error);
+        }
+    }
+}

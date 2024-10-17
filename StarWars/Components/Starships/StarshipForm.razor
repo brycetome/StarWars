@@ -1,0 +1,112 @@
+﻿@inject IDbContextFactory<ApplicationDbContext> factory
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudStack>
+    <MudPaper Class="pa-4">
+        <MudStack Row AlignItems="AlignItems.Center">
+            <MudStack Spacing="0">
+                <MudText><b>Created</b></MudText>
+                <MudDivider />
+                <MudText>@LoadedStarship.Created.ToString()</MudText>
+            </MudStack>
+
+            <MudStack Spacing="0">
+                <MudText><b>Edited</b></MudText>
+                <MudDivider />
+                <MudText>@LoadedStarship.Edited.ToString()</MudText>
+            </MudStack>
+        </MudStack>
+    </MudPaper>
+
+    <MudPaper Class="pa-2">
+        <MudForm @ref=Form>
+            <MudGrid>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.Name
+                                  Label="Name"
+                                  Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.CargoCapacity
+                                  Label="Cargo Capacity"
+                                  Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.Consumables
+                                  Label="Consumables "
+                                  Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.CostInCredits
+                                  Label="Credits"
+                                  Format="C"
+                                  Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.Crew
+                                  Label="Credits"
+                                  Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudNumericField @bind-Value=LoadedStarship.HyperDriveRating
+                                     Label="Hyper Drive Rating"
+                                     Min="0"
+                                     Step="1000"
+                                     Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.Manufacturer
+                                  Label="Model"
+                                  Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.Model
+                                  Label="Model"
+                                  Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.MGLT
+                                  Label="Model"
+                                  Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudNumericField @bind-Value=LoadedStarship.Passengers
+                                     Label="Passengers"
+                                     Min="0"
+                                     Step="100"
+                                     Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.StarshipClass
+                                  Label="Class"
+                                  Required />
+                </MudItem>
+
+                <MudItem sm="12" md="6" xl="4">
+                    <MudTextField @bind-Value=LoadedStarship.URL
+                                  Label="URL"
+                                  Required />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </MudPaper>
+</MudStack>
+
+
+
+@code {
+    public Starship LoadedStarship = new();
+    public MudForm Form = new();
+}
