@@ -1,7 +1,116 @@
 ﻿@page "/"
 
-<h3>Home</h3>
+@using StarWars.Components.Starships;
+
+@inject IDbContextFactory<ApplicationDbContext> factory
+@inject ISnackbar Snackbar
+
+@if (RandomStarship != null)
+{
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Secondary">
+                    <MudIcon Icon="@Icons.Material.Filled.RocketLaunch" />
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">@RandomStarship.Name</MudText>
+                <MudText Typo="Typo.body2">@RandomStarship.Model</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Href="@($"/starships/edit/{RandomStarship.Id}")" />
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid>
+                <MudItem sm="6" md="4" xl="3">
+                    <StarshipInfo Icon="@Icons.Material.Filled.Storage"
+                                  Label="HyperDrive Rating"
+                                  Data="@RandomStarship.HyperDriveRating.ToString()" />
+                </MudItem>
+
+                <MudItem sm="6" md="4" xl="3">
+                    <StarshipInfo Icon="@Icons.Material.Filled.Speed"
+                                  Label="Max Atomsphering Speed"
+                                  Data="@RandomStarship.MaxAtomspheringSpeed" />
+                </MudItem>
+
+                <MudItem sm="6" md="4" xl="3">
+                    <StarshipInfo Icon="@Icons.Material.Filled.Money"
+                                  Label="Cost"
+                                  Data="@RandomStarship.CostInCredits" />
+                </MudItem>
+
+                <MudItem sm="6" md="4" xl="3">
+                    <StarshipInfo Icon="@Icons.Material.Filled.People"
+                                  Label="Passengers"
+                                  Data="@RandomStarship.Passengers.ToString()" />
+                </MudItem>
+
+                <MudItem sm="6" md="4" xl="3">
+                    <StarshipInfo Icon="@Icons.Material.Filled.PrecisionManufacturing"
+                                  Label="Manufacturer"
+                                  Data="@RandomStarship.Manufacturer" />
+                </MudItem>
+
+                <MudItem sm="6" md="4" xl="3">
+                    <StarshipInfo Icon="@Icons.Material.Filled.SportsMotorsports"
+                                  Label="Crew"
+                                  Data="@RandomStarship.Crew" />
+                </MudItem>
+
+                <MudItem sm="6" md="4" xl="3">
+                    <StarshipInfo Icon="@Icons.Material.Filled.Storage"
+                                  Label="Cargo Capacity"
+                                  Data="@RandomStarship.CargoCapacity" />
+                </MudItem>
+
+                <MudItem sm="6" md="4" xl="3">
+                    <StarshipInfo Icon="@Icons.Material.Filled.LocalFireDepartment"
+                                  Label="Consumables"
+                                  Data="@RandomStarship.Consumables" />
+                </MudItem>
+            </MudGrid>
+
+
+        </MudCardContent>
+    </MudCard>
+}
+else
+{
+    <MudProgressCircular Indeterminate Color="Color.Primary" />
+}
 
 @code {
+    private List<Starship> Starships = [];
+    private Starship? RandomStarship;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            try
+            {
+                using var ctx = factory.CreateDbContext();
+                Starships = await ctx.Starship.ToListAsync();
+                await ctx.DisposeAsync();
+                if (Starships.Count == 0)
+                {
+                    Snackbar.Add("No starships found.", Severity.Info);
+                }
+                else
+                {
+                    Random rnd = new Random();
+                    RandomStarship = Starships[rnd.Next(0, Starships.Count - 1)];
+                }
+            }
+            catch
+            {
+                Snackbar.Add("Failed to load the Starships.", Severity.Error);
+            }
+        }
+        StateHasChanged();
+    }
 }

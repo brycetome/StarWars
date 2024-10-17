@@ -1,0 +1,58 @@
+﻿@page "/starships"
+
+@inject IDbContextFactory<ApplicationDbContext> factory
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+
+<MudDataGrid T="Starship"
+             Items="Starships"
+             Filterable
+             SortMode="SortMode.Multiple"
+             Breakpoint="Breakpoint.Xs"
+             FilterMode="DataGridFilterMode.ColumnFilterRow"
+             RowClick="NavigateToStarship"
+             Loading="Starships.Count == 0"
+             Hideable
+             Dense
+             ShowColumnOptions>
+    <Columns>
+        <PropertyColumn Property="x => x.Name" Title="Name" StickyLeft />
+        <PropertyColumn Property="x => x.Model" Title="Model" />
+        <PropertyColumn Property="x => x.Manufacturer" Title="Manufacturer" />
+        <PropertyColumn Property="x => x.StarshipClass" Title="Class" />
+        <PropertyColumn Property="x => x.Crew" Title="Crew" />
+        <PropertyColumn Property="x => x.CostInCredits" Title="Crew" />
+        <PropertyColumn Property="x => x.Passengers" Title="Passengers" />
+        <PropertyColumn Property="x => x.Created" Title="Created" />
+        <PropertyColumn Property="x => x.Edited" Title="Edited" />
+    </Columns>
+
+</MudDataGrid>
+
+
+
+@code {
+    private List<Starship> Starships = [];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            try
+            {
+                using var ctx = factory.CreateDbContext();
+                Starships = await ctx.Starship.ToListAsync();
+                await ctx.DisposeAsync();
+            }
+            catch
+            {
+                Snackbar.Add("Failed to load the Starships.", Severity.Error);
+            }
+        }
+        StateHasChanged();
+    }
+
+    private void NavigateToStarship(DataGridRowClickEventArgs<Starship> args) => NavigationManager.NavigateTo($"/starships/edit/{args.Item.Id}");
+}

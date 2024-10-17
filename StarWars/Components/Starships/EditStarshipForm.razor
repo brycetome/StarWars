@@ -1,0 +1,89 @@
+﻿@page "/starships/edit/{StarshipId:int}"
+
+@inherits StarshipForm
+
+@inject IDbContextFactory<ApplicationDbContext> factory
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+@{
+    base.BuildRenderTree(__builder);
+}
+
+<MudStack Row AlignItems="AlignItems.Center" Justify="Justify.FlexStart" Class="pa-2 ma-4">
+    <MudButton Variant="Variant.Filled"
+               EndIcon="@Icons.Material.Filled.Save"
+               Color="Color.Primary"
+               OnClick="UpdateStarship">
+        Update
+    </MudButton>
+
+    <MudButton Variant="Variant.Filled"
+               EndIcon="@Icons.Material.Filled.Delete"
+               Color="Color.Secondary"
+               OnClick="DeleteStarship">
+        Delete
+    </MudButton>
+</MudStack>
+
+@code {
+    [Parameter] public int StarshipId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        try
+        {
+            using var ctx = factory.CreateDbContext();
+            LoadedStarship = await ctx.Starship.FindAsync(StarshipId)
+                ?? throw new NullReferenceException("Starship not found.");
+            await ctx.DisposeAsync();
+        }
+        catch
+        {
+            Snackbar.Add("Failed to load the Starship.", Severity.Error);
+        }
+    }
+
+    private async Task UpdateStarship()
+    {
+        await Form.Validate();
+        if (!Form.IsValid)
+            return;
+
+        var now = DateTime.Now.ToUniversalTime();
+        LoadedStarship.Edited = now;
+
+        try
+        {
+            using var ctx = factory.CreateDbContext();
+            ctx.Entry(LoadedStarship).State = EntityState.Modified;
+            await ctx.SaveChangesAsync();
+            await ctx.DisposeAsync();
+
+            Snackbar.Add("Updated the Starship", Severity.Success);
+        }
+        catch
+        {
+            Snackbar.Add("Failed to update the Starship", Severity.Error);
+        }
+    }
+
+    private async Task DeleteStarship()
+    {
+        try
+        {
+            using var ctx = factory.CreateDbContext();
+            ctx.Entry(LoadedStarship).State = EntityState.Deleted;
+            await ctx.SaveChangesAsync();
+            await ctx.DisposeAsync();
+
+            Snackbar.Add("Deleted the Starship", Severity.Success);
+            NavigationManager.NavigateTo("/");
+        }
+        catch
+        {
+            Snackbar.Add("Failed to delete the Starship", Severity.Error);
+        }
+    }
+}

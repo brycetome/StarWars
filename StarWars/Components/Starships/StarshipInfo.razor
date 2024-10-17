@@ -1,0 +1,13 @@
+﻿<MudStack Row AlignItems="AlignItems.Center">
+    <MudIcon Icon="@Icon" />
+    <MudStack Spacing="0">
+        <MudText Typo="Typo.caption">@Label</MudText>
+        <MudText>@Data</MudText>
+    </MudStack>
+</MudStack>
+
+@code {
+    [Parameter] public string Icon { get; set; } = "";
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string Data { get; set; } = "";
+}

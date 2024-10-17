@@ -1,13 +1,31 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider IsDarkMode />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/MudBlazor/MudBlazor" Target="_blank" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_open" Breakpoint="Breakpoint.Xs" Elevation="1" Variant="@DrawerVariant.Responsive">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Starwars Starships</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Match="NavLinkMatch.All" Href="/starships" Icon="@Icons.Material.Filled.RocketLaunch">All</MudNavLink>
+            <MudNavLink Match="NavLinkMatch.All" Href="/starships/new" Icon="@Icons.Material.Filled.Add">New Starship</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+
     <MudMainContent>
-        @Body
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pt-4">
+            @Body
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 
@@ -16,3 +34,12 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    private bool _open = true;
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+}
