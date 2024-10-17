@@ -1,16 +1,18 @@
 services:
+  backend:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=sa
+      - POSTGRES_PASSWORD=GoEngineer123
+    ports:
+      - "5432:5432"   
+    volumes:
+      - ./StarWarsModels/DB-Init-Script:/docker-entrypoint-initdb.d
+      - ./StarWarsModels/DB-Init-Backup:/data 
+
   starwars:
     image: ${DOCKER_REGISTRY-}starwars
     build:
       context: .
       dockerfile: StarWars/Dockerfile
-
-  backend:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=GoEngineer123
-    ports:
-      - "1433:1433"
-    volumes:
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql

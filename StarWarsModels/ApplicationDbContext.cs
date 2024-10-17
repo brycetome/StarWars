@@ -9,11 +9,20 @@ namespace StarWarsModels
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public ApplicationDbContext()
         {
 
+        }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder
+                .UseNpgsql(@"Server=backend;Database=StarWarsDB;Username=sa;Password=GoEngineer123;TrustServerCertificate=True;");
 
+        public DbSet<Starship> Starship { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            
         }
     }
 }

@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using MudBlazor;
 using MudBlazor.Services;
 using StarWars.Components;
 using StarWarsModels;
+using System.Text.RegularExpressions;
+using static MudBlazor.CategoryTypes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContext<ApplicationDbContext>(
-    options => options.UseSqlServer("Server=backend;Database=StarWarsDB;User Id=sa;Password=GoEngineer123;TrustServerCertificate=True;"));
-
+builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddHttpClient();
 builder.Services.AddMudServices();
 
 var app = builder.Build();
@@ -24,6 +26,39 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+var httpClient = app.Services.GetRequiredService<HttpClient>();
+
+using (var ctx = new ApplicationDbContext())
+{
+    if ((await ctx.Starship.ToListAsync()).Count == 0)
+    {
+        var jsonResponse = "";
+        var nextURL = "https://swapi.dev/api/starships/";
+        do
+        {
+            using HttpResponseMessage response = await httpClient.GetAsync(nextURL);
+
+            if (!response.IsSuccessStatusCode)
+                break;
+
+            jsonResponse = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"{jsonResponse}\n");
+            if (jsonResponse is string json)
+            {
+                StarshipsGetResponse? APIResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<StarshipsGetResponse>(json);
+
+                foreach (var shipAPI in APIResponse?.results ?? [])
+                    ctx.Add(new Starship(shipAPI));
+                nextURL = APIResponse?.next ?? "";
+            }
+            response.Dispose();
+        }
+        while (!string.IsNullOrEmpty(nextURL));
+        await ctx.SaveChangesAsync();
+        await ctx.DisposeAsync();
+    }
+}
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -32,4 +67,4 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
+await app.RunAsync();
